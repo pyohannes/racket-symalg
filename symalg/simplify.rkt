@@ -265,6 +265,8 @@
                 (make-sym 'x))
   (check-equal? (simplify (make-mul (make-num 0) (make-sym 'x)))
                 (make-num 0))
+  (check-equal? (simplify (make-mul (make-num 2) (make-frac 1 2)))
+                (make-num 1))
 
   ;; ASAE-4.3
   (check-equal? (simplify (make-mul (make-power (make-sym 'x) (make-num 3))
@@ -321,7 +323,9 @@
              (constant-* r n)))
          (match (simplify n)
            [(== (make-num 1))
-            (apply make-mul rest/fs)]
+            (if (null? rest/fs)
+                (make-num 1)
+                (apply make-mul rest/fs))]
            [(== (make-num 0))
             (make-num 0)]
            [n
@@ -397,12 +401,21 @@
   (check-exn 
     exn:fail?
     (lambda () (simplify (make-power (make-num 0) (make-num -1)))))
+
+  ;; No nested exponents
+  (check-equal? (simplify (parse-sexpr '(expt x (expt y z))))
+                (parse-sexpr '(expt x (* y z))))
+  (check-equal? (simplify (parse-sexpr '(expt (expt x y) z)))
+                (parse-sexpr '(expt x (* y z))))
+  (check-equal? (simplify (parse-sexpr '(expt (expt x 2) (/ 1 2))))
+                (parse-sexpr 'x))
   )
 
 (define-instance ((simplify power) p)
   (apply-simplify p 
                   power?  
                   (list power-simplify/children
+                        power-simplify/nested
                         power-simplify/num
                         power-simplify/mul
                         )))
@@ -410,6 +423,22 @@
 (define (power-simplify/children p)
   (make-power (simplify (power-base p))
               (simplify (power-exponent p))))
+
+(define (power-simplify/nested p)
+  (define base (power-base p))
+  (define exponent (power-exponent p))
+  (cond ((power? base)
+         (simplify 
+           (make-power (power-base base)
+                       (make-mul (power-exponent base)
+                                 exponent))))
+        ((power? exponent)
+         (simplify 
+           (make-power (power-base p)
+                       (make-mul (power-base exponent)
+                                 (power-exponent exponent)))))
+        (else
+         p)))
 
 (define (power-simplify/num p)
   (match (list (power-base p) (power-exponent p))
