@@ -12,6 +12,7 @@
          racket/match
          racket/list
          racket/bool
+         "simplify.rkt"
          "private/data.rkt"
          "private/util.rkt")
 
@@ -182,14 +183,38 @@
                 "(x + 3)^{4}")
   (check-equal? (latex (make-power (make-sym 'x) (make-num -1)))
                 "\\frac{1}{x}")
+  (check-equal? (latex (make-power (make-sym 'x) (make-frac 1 2)))
+                "\\sqrt{x}")
+  (check-equal? (latex (make-power (make-sym 'x) (make-frac 2 3)))
+                "\\sqrt[3]{x^{2}}")
+  (check-equal? (latex (parse-sexpr '(expt x (/ y z))))
+                "\\sqrt[z]{x^{y}}")
+  (check-equal? (latex (parse-sexpr '(expt (expt x 3) (/ 4 5))))
+                "\\sqrt[5]{x^{12}}")
   )
 
 (define-instance ((latex power) p)
-  (if (negative-exponent? p)
-      (latex (make-mul p))
-      (format "~a^{~a}" 
-              (parentize (power-base p))
-              (latex (power-exponent p)))))
+  (define base (power-base p))
+  (define exponent (power-exponent p))
+  (cond ((negative-exponent? p)
+         (latex (make-mul p)))
+        ((frac? exponent)
+         (format-sqrt base 
+                      (make-num (frac-num exponent))
+                      (make-num (frac-denom exponent))))
+        ((and (mul? exponent)
+              (ormap negative-exponent? (mul-factors exponent)))
+         (define f (mul-factors exponent))
+         (define f+ (filter (negate negative-exponent?) f))
+         (define f- (map abs-exponent
+                         (filter negative-exponent? f)))
+         (format-sqrt base
+                      (apply make-mul f+) 
+                      (apply make-mul f-)))
+        (else
+         (format "~a^{~a}" 
+                 (parentize base)
+                 (latex (power-exponent p))))))
 
 ;; ----------
 ;; logn-latex
@@ -371,3 +396,23 @@
   (if (= 1 exponent-val)
       base
       (make-power base (make-num exponent-val))))
+
+; -----------
+; format-sqrt
+; -----------
+
+(module+ test
+  (check-equal? (format-sqrt (make-sym 'x) (make-num 1) (make-num 2))
+                "\\sqrt{x}")
+  (check-equal? (format-sqrt (make-sym 'x) (make-num 2) (make-num 3))
+                "\\sqrt[3]{x^{2}}")
+  (check-equal? (format-sqrt (make-sym 'x) (make-sym 'y) (make-sym 'z))
+                "\\sqrt[z]{x^{y}}")
+  )
+
+(define (format-sqrt base exponent root)
+  (format "\\sqrt~a{~a}"
+          (if (equal? root (make-num 2))
+              ""
+              (format "[~a]" (latex root)))
+          (latex (simplify (make-power base exponent)))))
