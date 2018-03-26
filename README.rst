@@ -1,3 +1,6 @@
+.. image:: https://www.travis-ci.org/pyohannes/racket-symalg.svg?branch=master
+    :target: https://www.travis-ci.org/pyohannes/racket-symalg
+
 symalg
 ======
 
