@@ -139,14 +139,14 @@
                 "logn(3, 4)")
   (check-equal? (infix (make-logn (make-num 3) (make-sym 'x)))
                 "logn(3, x)")
-  (check-equal? (infix (make-logn (make-num 3) (make-num (exp 1))))
+  (check-equal? (infix (make-logn (make-num 3) (make-constant 'e)))
                 "ln(3)")
   )
 
 (define-instance ((infix/i logn) l resolve)
   (define s/n (infix/i (logn-n l) resolve))
   (define base (logn-base l))
-  (cond ((equal? base (make-num (exp 1)))
+  (cond ((equal? base (make-constant 'e))
          (format "ln(~a)" s/n))
         (else
           (format "logn(~a, ~a)" s/n (infix/i base resolve)))))

@@ -49,7 +49,7 @@
   (check-equal? (parse-sexpr '(expt x y))
                 (make-power (make-sym 'x) (make-sym 'y)))
   (check-equal? (parse-sexpr '(ln x))
-                (make-logn (make-sym 'x) (make-num (exp 1))))
+                (make-logn (make-sym 'x) (make-constant 'e)))
   (check-equal? (parse-sexpr '(logn x 2))
                 (make-logn (make-sym 'x) (make-num 2)))
   (check-equal? (parse-sexpr '(+ (* 3 x) (* 4 y)))
@@ -78,7 +78,7 @@
        ['e  (make-constant 'e)]
        [_   (make-sym s)])]
     [(list 'ln first)
-     (parse-sexpr (list 'logn first (exp 1)))]
+     (parse-sexpr (list 'logn first 'e))]
     [(list '/ first second)
      (parse-sexpr `(* ,first (expt ,second -1)))]
     [(list op args ...)
@@ -144,7 +144,7 @@
   (check-equal? (parse-infix "x^y")
                 (make-power (make-sym 'x) (make-sym 'y)))
   (check-equal? (parse-infix "ln(x)")
-                (make-logn (make-sym 'x) (make-num (exp 1))))
+                (make-logn (make-sym 'x) (make-constant 'e)))
   (check-equal? (parse-infix "3 * x + 4 * y")
                 (make-add (make-mul (make-num 3) (make-sym 'x))
                           (make-mul (make-num 4) (make-sym 'y))))

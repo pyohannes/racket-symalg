@@ -149,14 +149,14 @@
                                 (make-power base (make-num -1)))
                       (make-mul d/exponent
                                 (make-logn base 
-                                           (make-num (exp 1)))))))
+                                           (make-constant 'e))))))
 
 ;; -----------
 ;; logn-diff/i
 ;; -----------
 
 (module+ test
-  (check-equal? (diff/i (make-logn (make-sym 'x) (make-num (exp 1))) 'x)
+  (check-equal? (diff/i (make-logn (make-sym 'x) (make-constant 'e)) 'x)
                 (make-mul (make-num 1)
                           (make-power (make-sym 'x) (make-num -1))))
   )
@@ -164,7 +164,7 @@
 (define-instance ((diff/i logn) l s)
   (define n (logn-n l))
   (define base (logn-base l))
-  (cond ((equal? base (make-num (exp 1)))
+  (cond ((equal? base (make-constant 'e))
          (make-mul (diff/i n s)
                    (make-power n (make-num -1))))
         (else

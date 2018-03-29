@@ -223,14 +223,14 @@
 (module+ test
   (check-equal? (latex (make-logn (make-num 3) (make-sym 'x)))
                 "\\log_{x} 3")
-  (check-equal? (latex (make-logn (make-num 3) (make-num (exp 1))))
+  (check-equal? (latex (make-logn (make-num 3) (make-constant 'e)))
                 "\\ln 3")
   )
 
 (define-instance ((latex logn) l)
   (define s/n (latex (logn-n l)))
   (define base (logn-base l))
-  (cond ((equal? base (make-num (exp 1)))
+  (cond ((equal? base (make-constant 'e))
          (format "\\ln ~a" s/n))
         (else
           (format "\\log_{~a} ~a" (latex base) s/n))))

@@ -130,14 +130,14 @@
                 '(log 3 4))
   (check-equal? (sexpr (make-logn (make-num 3) (make-sym 'x)))
                 '(log 3 x))
-  (check-equal? (sexpr (make-logn (make-num 3) (make-num (exp 1))))
+  (check-equal? (sexpr (make-logn (make-num 3) (make-constant 'e)))
                 '(ln 3))
   )
 
 (define-instance ((sexpr logn) l)
   (define s/n (sexpr (logn-n l)))
   (define base (logn-base l))
-  (cond ((equal? base (make-num (exp 1)))
+  (cond ((equal? base (make-constant 'e))
          (list 'ln s/n))
         (else
           (list 'log s/n (sexpr base)))))
