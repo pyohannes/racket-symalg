@@ -11,6 +11,7 @@
   (all-from-out "symalg/parse.rkt")
   (all-from-out "symalg/infix.rkt")
   (all-from-out "symalg/linear.rkt")
+  (all-from-out "symalg/symalg-expr.rkt")
   )
 
 ;; ---------------------------------
@@ -23,4 +24,5 @@
          "symalg/simplify.rkt"
          "symalg/parse.rkt"
          "symalg/infix.rkt"
-         "symalg/linear.rkt")
+         "symalg/linear.rkt"
+         "symalg/symalg-expr.rkt")
