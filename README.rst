@@ -39,7 +39,22 @@ Expression can be converted to s-expressions, infix or LaTeX strings:
           (parse-infix "x^4 + 2 * x^(1/2)"))))
   "\\sqrt{\\frac{1}{x}} + 4 x^{3}"
 
-For detailed documentation see <http://docs.racket-lang.org/symalg>.
-
 The Diophantus project using `racket-symalg` as backend can be found at
 <http://johannes.tax/diophantus>.
+
+
+Installation
+------------
+
+`symalg` requires Racket 6.12 or higher. It can be installed using `raco`:
+
+.. code::
+
+  raco pkg install symalg
+
+
+Documentation
+-------------
+
+For detailed documentation see <http://docs.racket-lang.org/symalg>.
+
