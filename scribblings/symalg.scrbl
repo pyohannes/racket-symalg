@@ -95,7 +95,7 @@ symbolic algebraic expression. An infix expression can be an expression
 @defproc[(symalg-expr? [e any/c]) 
           boolean?]{
 This predicate checks, if the argument denotes a symbolic algebraic expression 
-that can be by the functions below.
+that can be processed by the functions below.
 }
 
 @defproc[(simplify [e symalg-expr?])
