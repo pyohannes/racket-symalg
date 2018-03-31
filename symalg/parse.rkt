@@ -52,6 +52,12 @@
                 (make-logn (make-sym 'x) (make-constant 'e)))
   (check-equal? (parse-sexpr '(logn x 2))
                 (make-logn (make-sym 'x) (make-num 2)))
+  (check-equal? (parse-sexpr '(log x))
+                (make-logn (make-sym 'x) (make-constant 'e)))
+  (check-equal? (parse-sexpr '(log10 x))
+                (make-logn (make-sym 'x) (make-num 10)))
+  (check-equal? (parse-sexpr '(log2 x))
+                (make-logn (make-sym 'x) (make-num 2)))
   (check-equal? (parse-sexpr '(+ (* 3 x) (* 4 y)))
                 (make-add (make-mul (make-num 3) (make-sym 'x))
                           (make-mul (make-num 4) (make-sym 'y))))
@@ -79,6 +85,12 @@
        [_   (make-sym s)])]
     [(list 'ln first)
      (parse-sexpr (list 'logn first 'e))]
+    [(list 'log first)
+     (parse-sexpr (list 'logn first 'e))]
+    [(list 'log2 first)
+     (parse-sexpr (list 'logn first 2))]
+    [(list 'log10 first)
+     (parse-sexpr (list 'logn first 10))]
     [(list '/ first second)
      (parse-sexpr `(* ,first (expt ,second -1)))]
     [(list op args ...)
@@ -145,6 +157,12 @@
                 (make-power (make-sym 'x) (make-sym 'y)))
   (check-equal? (parse-infix "ln(x)")
                 (make-logn (make-sym 'x) (make-constant 'e)))
+  (check-equal? (parse-infix "log(x)")
+                (make-logn (make-sym 'x) (make-constant 'e)))
+  (check-equal? (parse-infix "log2(x)")
+                (make-logn (make-sym 'x) (make-num 2)))
+  (check-equal? (parse-infix "log10(x)")
+                (make-logn (make-sym 'x) (make-num 10)))
   (check-equal? (parse-infix "3 * x + 4 * y")
                 (make-add (make-mul (make-num 3) (make-sym 'x))
                           (make-mul (make-num 4) (make-sym 'y))))
@@ -213,7 +231,7 @@
 
 (define infix-lexer
   (lexer 
-    [(:or "ln" "cos" "sin" "tan")
+    [(:or "ln" "cos" "sin" "tan" "log" "log10" "log2")
      (token-FUN (string->symbol lexeme))]
     [(:: alphabetic (:? "_" (:+ (:or alphabetic numeric))))
      (token-SYM (string->symbol lexeme))]

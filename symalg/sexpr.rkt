@@ -127,9 +127,13 @@
 
 (module+ test
   (check-equal? (sexpr (make-logn (make-num 3) (make-num 4)))
-                '(log 3 4))
+                '(logn 3 4))
   (check-equal? (sexpr (make-logn (make-num 3) (make-sym 'x)))
-                '(log 3 x))
+                '(logn 3 x))
+  (check-equal? (sexpr (make-logn (make-num 3) (make-num 2)))
+                '(log2 3))
+  (check-equal? (sexpr (make-logn (make-num 3) (make-num 10)))
+                '(log10 3))
   (check-equal? (sexpr (make-logn (make-num 3) (make-constant 'e)))
                 '(ln 3))
   )
@@ -139,8 +143,12 @@
   (define base (logn-base l))
   (cond ((equal? base (make-constant 'e))
          (list 'ln s/n))
+        ((equal? base (make-num 2))
+         (list 'log2 s/n))
+        ((equal? base (make-num 10))
+         (list 'log10 s/n))
         (else
-          (list 'log s/n (sexpr base)))))
+          (list 'logn s/n (sexpr base)))))
 
 ;; ----------
 ;; cos-sexpr
